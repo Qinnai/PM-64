@@ -1,0 +1,92 @@
+#include <stdio.h>
+#include <malloc.h>
+
+struct sta {
+	int i;
+	sta *top;
+};
+
+void push(int x, sta **st) {
+	sta * r;
+	r = new sta;
+	r->i = x;
+	r->top = (*st);
+	*st = r;
+}
+
+int popd(int *x, sta **st) {
+	sta * r;
+	if (*st) {
+		r = *st;
+		*x = (*st)->i;
+		*st = (*st)->top;
+		delete r;
+		return 1;
+	}
+	return 0;
+}
+
+int dfs(int n, bool **Graph, bool *Visited, int Node, int exit, sta **s) {
+	Visited[Node] = true;
+	int d, i;
+	bool stop = false;
+	printf(" %d ", Node + 1);
+	for (i = 0; i < n && stop == false; i++) {
+		if (Graph[Node][i] && !Visited[i]) {
+			if (exit == i) {
+				push(Node, s);
+				return 0;
+			}
+			else {
+				if (dfs(n, Graph, Visited, i, exit, s) != 1) {
+					stop = true;
+					push(Node, s);
+				}
+			}
+		}
+	}
+	if (i == n) {
+		return 1;
+	}
+}
+
+int main() {
+	int i, j, n;
+	int ex;
+	bool c;
+	int t;
+	bool tupik = false;
+	//////////////////
+	FILE *in;
+	fopen_s(&in, "IN.txt", "r+");
+	////////////////// задание размера матрицы смежности и ее элементов и номера комнаты, явл. выходом
+	printf("\n enter size \n");
+	fscanf(in, "%d", &n);
+	bool **a = (bool**)malloc(n * sizeof(bool*));
+	for (i = 0; i < n; i++) {
+		a[i] = (bool *)malloc(n * sizeof(bool));
+	}
+	bool *b = (bool*)malloc(n * sizeof(bool));
+	printf("\n enter elements (0 - no way, 1 - way) \n");
+	for (i = 0; i < n; i++) {
+		for (j = 0; j < n; j++) {
+			fscanf(in, "%d", &a[i][j]);
+		}
+	}
+	printf("\n who's exit? \n");
+	fscanf(in, "%d", &ex);
+	ex--;
+	////////////////////////////////////////////
+	sta *s = NULL;
+	for (i = 0; i < n; i++)
+		b[i] = 0;
+	i = 0;
+	j = 0;
+	dfs(n, a, b, i, ex, &s);
+	printf("\n path is: ");
+	while (popd(&t, &s))
+		printf("%d ", t + 1);
+	printf("%d", ex + 1);
+	printf("\n");
+	return 0;
+}
